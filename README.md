@@ -31,7 +31,7 @@ A deep learning-based application for detecting and segmenting fire in real-time
 
 ### 🛠 Admin Side
 
-#### 📊 Admin Dashboard
+#### 📊 Admin Home Page
 <img src="assets/Admin-side/homepage.png" alt="User Home Page" width="700" />
 
 #### 📁 Detection Logs
@@ -79,9 +79,13 @@ http://localhost:5000
 We welcome contributions! Whether it’s reporting bugs, discussing improvements, or submitting pull requests — every bit helps!
 
 Fork the repository
+
 Create a new branch (git checkout -b feature/YourFeature)
+
 Commit your changes (git commit -m 'Add your message')
+
 Push to the branch (git push origin feature/YourFeature)
+
 Open a Pull Request
 
 
