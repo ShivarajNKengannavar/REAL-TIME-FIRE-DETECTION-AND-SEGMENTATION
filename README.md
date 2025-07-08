@@ -1,14 +1,20 @@
-# Real-Time Fire Segmentation System
+# 🔥 Real-Time Fire Segmentation
 
-This project implements a real-time fire segmentation system using deep learning for intelligent emergency response. The system processes video input in real-time, identifies fire regions, and displays both the segmentation results and a risk heatmap.
+A deep learning-based application for detecting and segmenting fire in real-time video streams. This project uses image processing and semantic segmentation techniques to isolate fire regions, ideal for early warning systems and surveillance. 
 
-## Features
+## 🚀 Features
 
 - Real-time fire detection and segmentation
 - Live video feed with overlay visualization
-- Risk heatmap generation
 - Emergency response status panel
 - Performance metrics monitoring
+
+## 🧰 Tech Stack
+
+- Python
+- OpenCV
+- TensorFlow / PyTorch (based on your code)
+- NumPy
 
 ## Installation
 
