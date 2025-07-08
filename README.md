@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.jpg" alt="Project Banner" width="1000" />
+</p>
+
 # 🔥 Real-Time Fire Segmentation
 
 A deep learning-based application for detecting and segmenting fire in real-time video streams. This project uses image processing and semantic segmentation techniques to isolate fire regions, ideal for early warning systems and surveillance. 
@@ -31,6 +35,12 @@ pip install -r requirements.txt
 python app.py
 ```
 
+```
+Navigate to the frontend path and paste the cd ./frontend path :-
+Run npm install 
+npm run dev
+```
+
 2. Open a web browser and navigate to:
 ```
 http://localhost:5000
@@ -52,5 +62,4 @@ The system uses a custom U-Net-like architecture for fire segmentation, implemen
 ## Notes
 
 - The system is designed for real-time monitoring and should be used as part of a comprehensive emergency response system
-- For production use, you should train the model on a large dataset of fire images
-- The heatmap shows areas of high fire risk based on the model's predictions
+                   "Thank you for stopping by and exploring this project — your interest and support mean a lot!" 
