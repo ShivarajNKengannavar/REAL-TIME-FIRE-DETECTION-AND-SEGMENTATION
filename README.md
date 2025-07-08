@@ -20,6 +20,23 @@ A deep learning-based application for detecting and segmenting fire in real-time
 - TensorFlow / PyTorch (based on your code)
 - NumPy
 
+
+## 🖼️ Screenshots
+
+### 👤 User Side
+
+#### 🏠 Home Page
+<img src="assets/User-side/homepage.png" alt="User Home Page" width="700" />
+---
+
+### 🛠 Admin Side
+
+#### 📊 Admin Dashboard
+<img src="assets/Admin-side/homepage.png" alt="User Home Page" width="700" />
+
+#### 📁 Detection Logs
+<img src="assets/Admin-side/logs.png" alt="Detection Logs" width="700" />
+
 ## Installation
 
 1. Clone this repository
@@ -52,14 +69,20 @@ http://localhost:5000
 - Webcam or video input device
 - CUDA-capable GPU (recommended for real-time performance)
 
-## Model Architecture
-
-The system uses a custom U-Net-like architecture for fire segmentation, implemented in PyTorch. The model consists of:
-- Encoder: 2 blocks with conv layers, batch normalization, and max pooling
-- Decoder: Upsampling and conv layers with skip connections
-- Final layer: Sigmoid activation for binary segmentation
-
 ## Notes
 
 - The system is designed for real-time monitoring and should be used as part of a comprehensive emergency response system
+
+👨‍💻 Developer Shivaraj N Kengannavar Email: shivarajnkengannavar@gmail.com
+
+🙌 Contributing
+We welcome contributions! Whether it’s reporting bugs, discussing improvements, or submitting pull requests — every bit helps!
+
+Fork the repository
+Create a new branch (git checkout -b feature/YourFeature)
+Commit your changes (git commit -m 'Add your message')
+Push to the branch (git push origin feature/YourFeature)
+Open a Pull Request
+
+
                    "Thank you for stopping by and exploring this project — your interest and support mean a lot!" 
