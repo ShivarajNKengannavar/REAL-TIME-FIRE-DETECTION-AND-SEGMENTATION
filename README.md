@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.jpg" alt="Project Banner" width="1000" />
+  <img src="assets/banner.jpg" alt="Project Banner" width="400" />
 </p>
 
 # 🔥 Real-Time Fire Segmentation
