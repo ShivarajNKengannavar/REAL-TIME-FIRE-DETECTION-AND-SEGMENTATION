@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fire Segmentation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        .container { max-width: 1400px; margin-top: 20px; }
+        .video-container { margin-bottom: 20px; }
+        .status-panel { 
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .alert-level {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        #heatmap, #map {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .risk-indicator {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .risk-low { background-color: #28a745; }
+        .risk-medium { background-color: #ffc107; color: black; }
+        .risk-high { background-color: #dc3545; }
+        .search-box {
+            margin-bottom: 15px;
+        }
+        .search-box input {
+            border-radius: 20px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .zone-type-select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+        .legend {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Real-Time Fire Segmentation System</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="video-container">
+                    <h3>Live Feed with Segmentation</h3>
+                    <img src="{{ url_for('video_feed') }}" width="100%">
+                </div>
+                <div class="status-panel">
+                    <h3>Interactive Risk Heatmap</h3>
+                    <div id="heatmap"></div>
+                    <div class="risk-indicator" id="risk-level">Analyzing Risk Level...</div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="status-panel">
+                    <h3>Location Analysis</h3>
+                    <div class="search-box">
+                        <input type="text" id="location-search" placeholder="Search for a location...">
+                        <select class="zone-type-select" id="zone-type">
+                            <option value="residential">Residential Zone</option>
+                            <option value="commercial">Commercial Zone</option>
+                            <option value="industrial">Industrial Zone</option>
+                        </select>
+                        <button class="btn btn-primary w-100" onclick="analyzeLocation()">Analyze Location</button>
+                    </div>
+                    <div id="map">{{ map | safe }}</div>
+                    <div class="legend">
+                        <h5>Risk Level Legend</h5>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #28a745;"></div>
+                            <span>Low Risk (0-30%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ffc107;"></div>
+                            <span>Medium Risk (31-70%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #dc3545;"></div>
+                            <span>High Risk (71-100%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="status-panel">
+                    <h3>System Analytics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>Processing Speed</h4>
+                            <div class="stat-value" id="fps">0</div>
+                            <small>Frames per Second</small>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Maximum Risk</h4>
+                            <div class="stat-value" id="max-risk">0%</div>
+                            <small>Highest Detected Risk</small>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Average Risk</h4>
+                            <div class="stat-value" id="avg-risk">0%</div>
+                            <small>Overall Risk Level</small>
+                        </div>
+                        <div class="stat-card">
+                            <h4>High Risk Zones</h4>
+                            <div class="stat-value" id="risk-zones">0</div>
+                            <small>Areas Requiring Attention</small>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <h4>Emergency Contacts</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>🚒 Fire Department:</strong> 911
+                            </div>
+                            <div class="col-md-4">
+                                <strong>👨‍🚒 Emergency Response:</strong> 112
+                            </div>
+                            <div class="col-md-4">
+                                <strong>🏥 Medical Emergency:</strong> 911
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize Socket.IO
+        const socket = io();
+
+        // Initialize heatmap
+        fetch('/get_latest_heatmap')
+            .then(response => response.json())
+            .then(data => {
+                if (Object.keys(data).length > 0) {
+                    Plotly.newPlot('heatmap', data.data, data.layout);
+                }
+            });
+
+        // Handle real-time updates
+        socket.on('heatmap_update', function(data) {
+            // Update heatmap
+            Plotly.react('heatmap', data.heatmap_data.data, data.heatmap_data.layout);
+
+            // Update statistics
+            document.getElementById('fps').textContent = data.fps;
+            document.getElementById('max-risk').textContent = (data.max_risk * 100).toFixed(1) + '%';
+            document.getElementById('avg-risk').textContent = (data.avg_risk * 100).toFixed(1) + '%';
+            document.getElementById('timestamp').textContent = data.timestamp;
+
+            // Update risk level indicator
+            const riskLevel = document.getElementById('risk-level');
+            const avgRisk = data.avg_risk;
+
+            if (avgRisk < 0.3) {
+                riskLevel.className = 'risk-indicator risk-low';
+                riskLevel.textContent = 'Low Risk Level';
+            } else if (avgRisk < 0.7) {
+                riskLevel.className = 'risk-indicator risk-medium';
+                riskLevel.textContent = 'Medium Risk Level';
+            } else {
+                riskLevel.className = 'risk-indicator risk-high';
+                riskLevel.textContent = 'High Risk Level - Immediate Action Required';
+            }
+        });
+
+        // Handle WebSocket connection status
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+    </script>
+</body>
+</html>
